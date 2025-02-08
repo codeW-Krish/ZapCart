@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+        <color name="colorPrimary">#6C5CE7</color> <!-- Vibrant Purple -->
+        <color name="colorPrimaryVariant">#6C5CE7</color> <!-- Vibrant Purple (light or dark variant) -->
+        <color name="colorAccent">#00CEC9</color> <!-- Cyan -->
+        <color name="colorSecondary">#FF7675</color> <!-- Soft Red -->
+        <color name="colorBackground">#F8F9FA</color> <!-- Soft White -->
+        <color name="colorCardBackground">#FFFFFF</color> <!-- Pure White -->
+        <color name="colorTextPrimary">#2D3436</color> <!-- Deep Charcoal Black (Primary Text) -->
+        <color name="colorTextSecondary">#636E72</color> <!-- Cool Gray (Secondary Text) -->
+        <color name="colorError">#D63031</color> <!-- Deep Red -->
+        <color name="colorSuccess">#00B894</color> <!-- Emerald Green -->
+        <color name="colorNavBar">#EAEAEA</color> <!-- Light Gray -->
+</resources>
