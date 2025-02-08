@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.example.zapcart.R;
 import com.example.zapcart.adapter.ProductAdapter;
@@ -22,6 +23,7 @@ import com.example.zapcart.models.ProductResponse;
 import com.example.zapcart.repositories.ProductRepository;
 import com.example.zapcart.viewmodels.ProductViewModel;
 import com.example.zapcart.viewmodels.ProductViewModelFactory;
+import com.google.android.material.search.SearchBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,8 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
     private RecyclerView recyclerView;
     private ProductAdapter productAdapter;
     private ProductViewModel productViewModel;
+    private ProgressBar progressBar;
+    private SearchBar searchBar;
 
     public HomeFragment() {
 
@@ -63,6 +67,8 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        searchBar = view.findViewById(R.id.search_view);
+        progressBar = view.findViewById(R.id.progress_bar);
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
@@ -70,59 +76,57 @@ public class HomeFragment extends Fragment implements ProductAdapter.OnProductCl
         productAdapter = new ProductAdapter(getContext(), HomeFragment.this);
         recyclerView.setAdapter(productAdapter);
 
-//        Call<ProductResponse> productResponseCall = RetrofitClient.getProductAPIService().getProducts(10, 10, "id,title,category,description,price,discountPercentage,rating,stock,images,thumbnail");
-//        productResponseCall.enqueue(new Callback<ProductResponse>() {
-//            @Override
-//            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
-//                if (response.isSuccessful() && response.body() != null) {
-////                    productAdapter.setProductList(response.body().getProducts());
-//                } else {
-//                    Log.e("HomeFragment", "API Response was not successful or empty");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ProductResponse> call, Throwable t) {
-//                Log.e("HomeFragment", "API request failed", t);
-//            }
-//        });
-
         productViewModel = new ViewModelProvider(this, new ProductViewModelFactory(new ProductRepository()))
-                .get(ProductViewModel.class);
+                    .get(ProductViewModel.class);
 
 
 
         productViewModel.getProductsLiveData().observe(getViewLifecycleOwner(), new Observer<List<Product>>() {
-            @Override
-            public void onChanged(List<Product> productList) {
-                if (productList != null && !productList.isEmpty()) {
-                    productAdapter.setProductList(productList);
-                    Log.d("HomeFragment", "Products updated in adapter: " + productList.size());
-                } else {
-                    Log.e("HomeFragment", "No products to display");
+                @Override
+                public void onChanged(List<Product> productList) {
+                    if (productList != null && !productList.isEmpty()) {
+                        productAdapter.setProductList(productList);
+                        productAdapter.notifyDataSetChanged();
+                        Log.d("HomeFragment", "Products updated in adapter: " + productList.size());
+                    } else {
+                        Log.e("HomeFragment", "No products to display");
+                    }
+                    hideProgressBar();
                 }
-            }
         });
 
-
+        showProgressBar();
 
         productViewModel.fetchProducts();
 
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                if (!recyclerView.canScrollVertically(1)) { // Check if we're at the bottom
-                    productViewModel.fetchProducts(); // Fetch more products when scrolled to bottom
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    if (!recyclerView.canScrollVertically(1)) {// Check if we're at the bottom
+                        showProgressBar();
+                        productViewModel.fetchProducts(); // Fetch more products when scrolled to bottom
+                    }
                 }
+            });
+
+            return view;
+        }
+
+        @Override
+        public void onProductClick(Product product) {
+            // Handle product click event here if needed
+        }
+
+        private void showProgressBar(){
+            if(progressBar != null){
+                progressBar.setVisibility(View.VISIBLE);
             }
-        });
+        }
 
-        return view;
+        private void hideProgressBar(){
+            if(progressBar != null){
+                progressBar.setVisibility(View.GONE);
+            }
+        }
     }
-
-    @Override
-    public void onProductClick(Product product) {
-        // Handle product click event here if needed
-    }
-}

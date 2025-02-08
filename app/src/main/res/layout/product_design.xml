@@ -22,7 +22,7 @@
             android:background="@color/colorBackground"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/product_title"
             android:text="Product Name"
@@ -34,7 +34,7 @@
             android:ellipsize="end"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/product_price"
             android:text="90$"

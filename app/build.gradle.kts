@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.gson)
     implementation(libs.glide)
+
 //    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
 //    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     testImplementation(libs.junit)

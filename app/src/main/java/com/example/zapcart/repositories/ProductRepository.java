@@ -15,10 +15,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.google.gson.Gson;
 
 public class ProductRepository {
     private ProductAPIService productAPIService;
-    ProductAPIService api = RetrofitClient.getProductAPIService();
 
     public ProductRepository(){
         productAPIService = RetrofitClient.getProductAPIService();
@@ -32,17 +32,23 @@ public class ProductRepository {
             @Override
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
                 Log.d("ProductRepository", "Response Body: " + response.body().toString());
-                if(response.isSuccessful() && response.body() != null){
-                    List<Product> productList = response.body().getProducts(); //this we got null why
+                if(response.isSuccessful()) {
+                    Log.d("ProductRepository", "Response Code: " + response.code());
+                    Log.d("ProductRepository", "Headers: " + response.headers());
+                    if (response.body() != null) {
+                        List<Product> productList = response.body().getProducts();
+                        Log.d("ProductRepository", "Response Body: " + new Gson().toJson(response.body()));
+                        //this we got null why
 //                    Log.d("ProductRepository", "Full Response: " + new Gson().toJson(response.body()));
-                    if(productList != null && !productList.isEmpty()){
-                        productsLiveData.setValue(productList);
-                    }else{
+                        if (productList != null && !productList.isEmpty()) {
+                            productsLiveData.setValue(productList);
+                        } else {
+                            productsLiveData.setValue(null);
+                            Log.e("ProductRepository", "no response from API in repository");
+                        }
+                    } else {
                         productsLiveData.setValue(null);
-                        Log.e("ProductRepository","no response from API in repository");
                     }
-                }else{
-                    productsLiveData.setValue(null);
                 }
             }
 
@@ -57,6 +63,9 @@ public class ProductRepository {
 
     public MutableLiveData<List<Product>> searchProducts(String query,int limit){
         MutableLiveData<List<Product>> searchProductsLiveData = new MutableLiveData<>();
+
+        Call<List<String>> categories = productAPIService.getCategoryList();
+
         Call<ProductResponse> productResponseCall = productAPIService.searchProducts(query,limit);
 
         productResponseCall.enqueue(new Callback<ProductResponse>() {
@@ -75,4 +84,5 @@ public class ProductRepository {
 
         return searchProductsLiveData;
     }
+
 }

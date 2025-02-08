@@ -36,8 +36,33 @@ public class ProductViewModel extends ViewModel {
         return categoriesData;
     }
 
+//    public void fetchProducts() {
+//        productRepository.getProducts(limit, skip,select).observeForever(new Observer<List<Product>>() {
+//            @Override
+//            public void onChanged(List<Product> products) {
+//                if (products != null && !products.isEmpty()) {
+//                    List<Product> currentProducts = productLiveData.getValue();
+//                    if (currentProducts == null) {
+//                        currentProducts = new ArrayList<>();
+//                    }
+//                    currentProducts.addAll(products);
+//                    productLiveData.setValue(currentProducts);
+//                    skip += limit; // Pagination logic
+//                    Log.d("ProductViewModel", "Fetched products: " + products.size());
+//                } else {
+//                    Log.e("ProductViewModel", "No products fetched or empty response");
+//                }
+//            }
+//        });
+//    }
+
+    // Fetch products with pagination
     public void fetchProducts() {
-        productRepository.getProducts(limit, skip,select).observeForever(new Observer<List<Product>>() {
+        // Log current skip value for debugging
+        Log.d("ProductViewModel", "Fetching products with skip = " + skip);
+
+        // Make API call to get products with current skip and limit
+        productRepository.getProducts(limit, skip, select).observeForever(new Observer<List<Product>>() {
             @Override
             public void onChanged(List<Product> products) {
                 if (products != null && !products.isEmpty()) {
@@ -45,12 +70,18 @@ public class ProductViewModel extends ViewModel {
                     if (currentProducts == null) {
                         currentProducts = new ArrayList<>();
                     }
+
+                    // Add new products to the list and update the LiveData
                     currentProducts.addAll(products);
                     productLiveData.setValue(currentProducts);
-                    skip += limit; // Pagination logic
+
+                    // Increment skip for the next API call
+                    skip += limit;
+
                     Log.d("ProductViewModel", "Fetched products: " + products.size());
                 } else {
                     Log.e("ProductViewModel", "No products fetched or empty response");
+                    // You can also trigger a "no data" state to show an empty message in the UI
                 }
             }
         });

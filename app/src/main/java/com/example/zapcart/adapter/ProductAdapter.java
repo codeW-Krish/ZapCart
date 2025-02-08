@@ -52,11 +52,18 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.viewHold
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         Product product = productList.get(position);
+        // Reset the layout parameters if necessary
+        ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
+        layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT; // Or set a fixed height if necessary
+        holder.itemView.setLayoutParams(layoutParams);
+
 
         Glide.with(context)
                 .load(product.thumbnail)  // URL or resource
                 .into(holder.product_img);
 
+        // Debug log to ensure the data is passed properly
+        Log.d("ProductAdapter", "Binding product: " + product.title);
         holder.product_title.setText(product.title);
         holder.product_price.setText(String.format("$%.2f", product.price));
 
@@ -77,18 +84,32 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.viewHold
         return 0;
     }
 
-    public void setProductList(List<Product> newProductList){
-        if(newProductList == null || newProductList.isEmpty()){
+//    public void setProductList(List<Product> newProductList){
+//        if(newProductList == null || newProductList.isEmpty()){
+//            Log.e("ProductAdapter", "Received empty or null product list");
+//            return;
+//        }
+//
+//        int oldSize = productList.size();
+//        productList.addAll(oldSize,newProductList);
+//        notifyItemRangeInserted(oldSize, newProductList.size());
+//
+//        Log.d("ProductAdapter", "Updated product list with " + newProductList.size() + " items");
+//    }
+
+    public void setProductList(List<Product> newProductList) {
+        if (newProductList == null || newProductList.isEmpty()) {
             Log.e("ProductAdapter", "Received empty or null product list");
             return;
         }
+        productList.clear();
+        productList.addAll(newProductList);
 
-        int oldSize = productList.size();
-        productList.addAll(oldSize,newProductList);
-        notifyItemRangeInserted(oldSize, newProductList.size());
+        notifyDataSetChanged();
 
         Log.d("ProductAdapter", "Updated product list with " + newProductList.size() + " items");
     }
+
 
     static class viewHolder extends RecyclerView.ViewHolder{
         ImageView product_img;
