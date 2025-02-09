@@ -3,12 +3,23 @@ package com.example.zapcart.fragments;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.zapcart.R;
+import com.example.zapcart.adapter.CartAdapter;
+import com.example.zapcart.authentication.SessionManager;
+import com.example.zapcart.database.CartEntity;
+import com.example.zapcart.viewmodels.CartViewModel;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,10 +68,38 @@ public class CartFragment extends Fragment {
         }
     }
 
+    CartAdapter cartAdapter;
+    CartViewModel cartViewModel;
+    SessionManager sessionManager;
+    TextView no_items;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_cart, container, false);
+        View view = inflater.inflate(R.layout.fragment_cart, container, false);
+        no_items = view.findViewById(R.id.no_items);
+
+        sessionManager = new SessionManager(requireContext());
+        if(sessionManager.isLoggedIn()){
+            RecyclerView cartRecyclerView = view.findViewById(R.id.cartRecyclerView);
+            cartRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            cartAdapter = new CartAdapter(getContext());
+            cartRecyclerView.setAdapter(cartAdapter);
+
+
+            cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+            cartViewModel.getCartItemsLiveData().observe(getViewLifecycleOwner(), new Observer<List<CartEntity>>() {
+                @Override
+                public void onChanged(List<CartEntity> cartItems) {
+                    cartAdapter.setCartItems(cartItems);
+                }
+            });
+
+            cartViewModel.fetchCartItems();
+        }else{
+            no_items.setVisibility(View.VISIBLE);
+        }
+
+        return view;
     }
 }

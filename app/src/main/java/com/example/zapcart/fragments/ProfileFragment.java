@@ -1,5 +1,6 @@
 package com.example.zapcart.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,8 +8,12 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.zapcart.R;
+import com.example.zapcart.authentication.LogInActivity;
+import com.example.zapcart.authentication.SessionManager;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,10 +62,53 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    TextView tv_username,tv_email;
+    Button btn_logout,btn_login;
+    SessionManager sessionManager;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        tv_username = view.findViewById(R.id.tv_username);
+        tv_email = view.findViewById(R.id.tv_email);
+        btn_logout = view.findViewById(R.id.btn_logout);
+        btn_login = view.findViewById(R.id.btn_login);
+
+        sessionManager = new SessionManager(requireContext());
+
+        if(sessionManager.isLoggedIn()){
+            tv_username.setText(sessionManager.getUserName());
+            tv_email.setText(sessionManager.getUserEmail());
+            btn_logout.setVisibility(View.VISIBLE);
+            btn_login.setVisibility(View.GONE);
+        }else{
+            tv_username.setText("No Account");
+            tv_email.setText("Please Log In");
+            btn_logout.setVisibility(View.GONE);
+            btn_login.setVisibility(View.VISIBLE);
+        }
+
+
+        btn_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sessionManager.logoutUser();
+                Intent intent = new Intent(getContext(), LogInActivity.class);
+                startActivity(intent);
+                requireActivity().finish();
+            }
+        });
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), LogInActivity.class);
+                startActivity(intent);
+                requireActivity().finish();
+            }
+        });
+
+        return view;
     }
 }

@@ -37,7 +37,18 @@ public class MainActivity extends AppCompatActivity {
         fragmentMap.put(R.id.nav_cart,new CartFragment());
         fragmentMap.put(R.id.nav_profile,new ProfileFragment());
 
-        getSupportFragmentManager().beginTransaction().add(R.id.frame_layout,new HomeFragment()).commit();
+
+        if(getIntent().hasExtra("is_from_logged_in")){
+            String v = getIntent().getStringExtra("is_from_logged_in");
+            if(v.equals("YES")){
+                getSupportFragmentManager().beginTransaction().replace(R.id.frame_layout,new CartFragment()).commit();
+            }else{
+                getSupportFragmentManager().beginTransaction().add(R.id.frame_layout,new HomeFragment()).commit();
+            }
+        }else{
+            getSupportFragmentManager().beginTransaction().add(R.id.frame_layout,new HomeFragment()).commit();
+        }
+
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

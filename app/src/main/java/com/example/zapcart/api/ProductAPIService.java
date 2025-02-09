@@ -21,8 +21,14 @@ public interface ProductAPIService {
     Call<ProductResponse> searchProducts(@Query("q") String query,@Query("limit") int limit);
 
     @GET("products/category/{category}")
-    Call<ProductResponse> getProductsByCategory(@Path("category") String category);
+    Call<ProductResponse> getProductsByCategory(@Path("category") String category,@Query("limit") int limit,@Query("skip") int skip);
 
-    @GET("products/categories")
+    @GET("products/category/{category}")
+    Call<ProductResponse> getProductsByCategoryNoPagination(@Path("category") String category);
+
+    @GET("products/search")
+    Call<ProductResponse> searchProductsNoPagination(@Query("q") String query);
+
+    @GET("products/category-list")
     Call<List<String>> getCategoryList();
 }
